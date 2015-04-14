@@ -14,7 +14,7 @@ public class Walk extends UnicastRemoteObject implements IWalk {
 	}
 	
 	public String total() {
-		String returnString = "j‡ andou um total de " + nsteps + " passos!\n";
+		String returnString = "jah andou um total de " + nsteps + " passos!\n";
 		return(returnString);
 	}
 }

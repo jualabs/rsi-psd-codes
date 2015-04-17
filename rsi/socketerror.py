@@ -22,7 +22,5 @@ class socketError(socket.socket):
             u = random.random()
             if (u>self.errorProb):
                 return self.recv(n)
-            else:
-                return b"Error"
         else:
             return self.recv(n)        

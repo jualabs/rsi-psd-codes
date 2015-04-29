@@ -13,6 +13,7 @@ while 1:
     try:
 	#Aguarda receber dados do socket
         message, clientAddress = serverSocket.recvfrom(2048)
+	print(clientAddress)
         modifiedMessage = message.upper()
         serverSocket.sendto(modifiedMessage, clientAddress)
     except (KeyboardInterrupt, SystemExit):

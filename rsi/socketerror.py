@@ -1,4 +1,4 @@
-import socket, random
+import socket, random, time
 
 class socketError(socket.socket):
     errorProb = 0.0
@@ -19,8 +19,11 @@ class socketError(socket.socket):
 
     def recvWithError(self, n):
         if (self.type == socket.SOCK_DGRAM):
+            data = self.recv(n)
             u = random.random()
             if (u>self.errorProb):
-                return self.recv(n)
+                return data
+            else:
+                raise socket.timeout
         else:
             return self.recv(n)        

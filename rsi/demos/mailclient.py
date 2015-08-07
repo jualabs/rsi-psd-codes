@@ -3,10 +3,10 @@
 import smtplib
 
 sender = 'alice@crepes.fr'
-receivers = ['rato@grr.la']
+receivers = ['ufrpe@grr.la']
 
 message = """From: Alice <alice@crepes.fr>
-To: Bob <bob@hamburguer.edu>
+To: Bob <ufrpe@grr.la>
 Subject: Important question.
 
 Do you like ketchup?

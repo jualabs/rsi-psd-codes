@@ -3,25 +3,25 @@
 import smtplib
 import base64
 
-filename = "crepe.jpg"
-sender = 'alice@crepes.fr'
-receivers = ['rato@grr.la']
+filename = "ufrpe.jpg"
+sender = 'junior@ufrpe.br'
+receivers = ['ufrpe@grr.la']
 
 # Read a file and encode it into base64 format
 fo = open(filename, "rb")
 filecontent = fo.read()
 fo.close()
 
-body="""Do you like ketchup?
-[]s, Alice.
+body="""Veja a logo desta importante universidade.
+[]s, Junior.
 """
 
 marker = "AUNIQUEMARKER"
 
 # Define the main headers.
-part1 = """From: Alice <alice@crepes.fr>
+part1 = """From: Junior <abraao@genesis.com>
 To: Bob <bob@hamburguer.edu>
-Subject: Picture of yummy crepe.
+Subject: Logo da ufrpe.
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary=%s
 --%s

@@ -3,7 +3,7 @@ import pika
 
 credentials = pika.PlainCredentials('psd', 'psd')
 connection = pika.BlockingConnection(pika.ConnectionParameters(
-               '54.233.123.103', 5672, '/', credentials))
+               '54.233.123.103', 5672, 'pratica_psd', credentials))
 channel = connection.channel()
 
 

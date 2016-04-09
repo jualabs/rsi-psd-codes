@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import pika
 
-credentials = pika.PlainCredentials('guest', 'guest')
+credentials = pika.PlainCredentials('psd', 'psd')
 connection = pika.BlockingConnection(pika.ConnectionParameters(
-               'localhost', 5672, '/', credentials))
+               '54.233.123.103', 5672, '/', credentials))
 channel = connection.channel()
 
 

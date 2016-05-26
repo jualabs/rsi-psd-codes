@@ -16,7 +16,7 @@ client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 #client.username_pw_set("psd:vwcm","vwcm")
-client.connect("52.67.15.126", 1883, 60)
+client.connect("52.67.34.106", 1883, 60)
 
 # Blocking call that processes network traffic, dispatches callbacks and
 # handles reconnecting.

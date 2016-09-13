@@ -1,27 +1,27 @@
 import socket, random, time
 
-class socketError(socket.socket):
-    errorProb = 0.0
+class socketLoss(socket.socket):
+    lossProb = 0.0
 
-    def setErrorProb(self, p):
-        self.errorProb = float(p)
+    def setLossProb(self, p):
+        self.lossProb = float(p)
 
-    def getErrorProb(self):
+    def getLossProb(self):
         return self.errorProb
     
-    def sendWithError(self, s):
+    def sendWithLoss(self, s):
         if (self.type == socket.SOCK_DGRAM):
             u = random.random()
-            if (u>self.errorProb):
+            if (u>self.lossProb):
                 self.send(s)
         else:
             self.send(s)
 
-    def recvWithError(self, n):
+    def recvWithLoss(self, n):
         if (self.type == socket.SOCK_DGRAM):
             data = self.recv(n)
             u = random.random()
-            if (u>self.errorProb):
+            if (u>self.lossProb):
                 return data
             else:
                 raise socket.timeout

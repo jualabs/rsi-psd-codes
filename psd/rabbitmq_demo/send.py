@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import pika
 
-credentials = pika.PlainCredentials('<user>', '<passwd>')
+credentials = pika.PlainCredentials('vwcm', 'vwcm')
 connection = pika.BlockingConnection(pika.ConnectionParameters(
-               '<host_adress>', 5672, '<vhost_name>', credentials))
+               'localhost', 5672, 'psd', credentials))
 channel = connection.channel()
 
 channel.queue_declare(queue='hello')

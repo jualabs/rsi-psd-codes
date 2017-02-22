@@ -36,6 +36,8 @@ def test1(sckt, user, bad):
   cnt += 1
   data, addr = sckt.recvfrom(2048)
   mess = data.strip("\n").split(" ")
+  if len(mess) != 2:
+    return -2
   if (not int(mess[0]) == cnt-1):
     return -2
   if (mess[1] == "OK"):
@@ -52,6 +54,8 @@ def test2(sckt):
   cnt += 1
   data, addr = sckt.recvfrom(2048)
   mess = data.strip("\n").split(" ")
+  if len(mess) != 2:
+    return -2
   if (not int(mess[0]) == cnt-1):
     return -2
   if (mess[1] == "NOK"):
@@ -72,6 +76,8 @@ def test3(sckt):
 	break
   
   mess = data1.split(" ")
+  if len(mess) < 3:
+    return -2
   if (not int(mess[0]) == cnt-1):
     return (-2,"")
   if (mess[1] == "ARQS"):
@@ -102,6 +108,8 @@ def test4(sckt,arq,bad):
 
   mess = data1.strip("\n").split(" ")
   print(mess)
+  if len(mess) < 3:
+    return -2
   if (not int(mess[0]) == cnt-1):
     return -2
   if (mess[1] == "ARQ"):

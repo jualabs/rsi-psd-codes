@@ -12,7 +12,7 @@ def connection(ip,port):
   return clientSocket
 
 def hardClose(sckt):
-  sckt.close()  
+  sckt.close()
 
 def softClose(sckt):
   global cnt
@@ -44,7 +44,7 @@ def test1(sckt, user, bad):
     return -1 if bad == 1 else 1
   elif (mess[1] == "NOK"):
     return 1 if bad == 1 else -1
-  else: 
+  else:
     return -2
 
 #test not expected commands
@@ -69,19 +69,37 @@ def test3(sckt):
   sckt.send(str(cnt)+" LIST")
   cnt += 1
   data1 = ""
+  commandUnknow = True
+  fileCnt = 0
   while 1:
     data, addr = sckt.recvfrom(2048)
+    if commandUnknow:
+        try:
+            commandUnknow = False
+            splitteddata = data.split(" ")
+            if splitteddata[1] == "ARQS":
+                filesTotal = int(splitteddata[2])
+                fileCnt += len(data.split(",")) 
+        except Exception as e:
+	    print e
+            break
+    else:
+        fileCnt += len(data.split(","))
     data1 += data
-    if ":END:" in data:    
-	break
-  
+    if fileCnt >= filesTotal:
+        break
+
+  print(data1)
+  files = data1.split(",")
+  firstFile = files[0].split(" ",3)
+  files[0] = firstFile[3]
   mess = data1.split(" ")
-  if len(mess) < 3:
-    return -2
+  if len(mess) < 4:
+    return (-2,"")
   if (not int(mess[0]) == cnt-1):
     return (-2,"")
   if (mess[1] == "ARQS"):
-    return (1,mess[2])
+    return (1,files)
   elif (mess == "NOK"):
     return (0,"")
   else:
@@ -93,22 +111,40 @@ def test4(sckt,arq,bad):
   sckt.send(str(cnt)+" PEGA "+arq)
   cnt += 1
   data1 = ""
+  commandUnknow = True
+  byteCnt = 0
+  data2 = None
   while 1:
     data, addr = sckt.recvfrom(2048)
+    if commandUnknow:
+        try:
+            commandUnknow = False
+            splitteddata = data.split(" ",3)
+            if splitteddata[1] == "ARQ":
+                bytesTotal = int(splitteddata[2])
+		data2 = splitteddata[3]
+                byteCnt += len(data2) 
+	    elif "NOK" in data:
+		break
+        except Exception as e:
+	    print e
+            break
+    else:
+	data2 += data
+        byteCnt += len(data)
     data1 += data
-    if "NOK" in data:
-	break
-    if ":END:" in data:    
-	break
+    if byteCnt >= bytesTotal:
+        break
 
-  if ":END:" in data1:
+  if data2:
     f = open(arq,"w")
-    f.write(data1[6:].strip(":END:"))
+    f.write(data2)
     f.close()
 
-  mess = data1.strip("\n").split(" ")
-  print(mess)
-  if len(mess) < 3:
+  mess = data1.split(" ",3)
+  if bad == 0 and len(mess) < 4:
+    return -2
+  if bad == 1 and len(mess) < 2:
     return -2
   if (not int(mess[0]) == cnt-1):
     return -2
@@ -130,11 +166,11 @@ if __name__ == "__main__":
   points = 0
 
   #Testing bad command
-  print("Testing command without CUMP")
-  cSocket = connection(serverIp,serverPort)
-  points += test2(cSocket)
-  print("Points: %d/6" % points)
-  hardClose(cSocket)
+  #print("Testing command without CUMP")
+  #cSocket = connection(serverIp,serverPort)
+  #points += test2(cSocket)
+  #print("Points: %d/6" % points)
+  #hardClose(cSocket)
 
   #Testing bad CUMP command
   print("Testing CUMP with bad user")
@@ -148,27 +184,27 @@ if __name__ == "__main__":
   cSocket = connection(serverIp,serverPort)
   points += test1(cSocket,user,0)
   print("Points: %d/6" % points)
-  
+
   #Testing LIST
   print("Testing LIST")
   (pts,arqs) = test3(cSocket)
   points += pts
   print("Points: %d/6" % points)
-  arq = random.choice(arqs.split(","))
-  
+  arq = random.choice(arqs)
+
   #Testing ARQ
   print("Testing ARQ with good file")
   if arq:
-     points += test4(cSocket,arq,0) 
+     points += test4(cSocket,arq,0)
   else:
      points += -2
   print("Points: %d/6" % points)
 
   #Testing ARQ
   print("Testing ARQ with bad file")
-  points += test4(cSocket,"novo_arquivo",1) 
+  points += test4(cSocket,"novo_arquivo",1)
   print("Points: %d/6" % points)
-  
+
   #Testing TERM
   print("Testing TERM")
   softClose(cSocket)

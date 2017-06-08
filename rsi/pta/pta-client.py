@@ -166,11 +166,11 @@ if __name__ == "__main__":
   points = 0
 
   #Testing bad command
-  #print("Testing command without CUMP")
-  #cSocket = connection(serverIp,serverPort)
-  #points += test2(cSocket)
-  #print("Points: %d/6" % points)
-  #hardClose(cSocket)
+  print("Testing command without CUMP")
+  cSocket = connection(serverIp,serverPort)
+  points += test2(cSocket)
+  print("Points: %d/6" % points)
+  hardClose(cSocket)
 
   #Testing bad CUMP command
   print("Testing CUMP with bad user")

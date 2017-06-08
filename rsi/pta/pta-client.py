@@ -125,6 +125,7 @@ def test4(sckt,arq,bad):
 		data2 = splitteddata[3]
                 byteCnt += len(data2) 
 	    elif "NOK" in data:
+		data1 += data
 		break
         except Exception as e:
 	    print e
@@ -133,6 +134,7 @@ def test4(sckt,arq,bad):
 	data2 += data
         byteCnt += len(data)
     data1 += data
+    print(byteCnt,bytesTotal)
     if byteCnt >= bytesTotal:
         break
 

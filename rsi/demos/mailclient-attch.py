@@ -48,7 +48,7 @@ Content-Disposition: attachment; filename=%s
 message = part1 + part2 + part3
 
 try:
-   conn = smtplib.SMTP('grr.la',25)
+   conn = smtplib.SMTP('localhost',25)
    conn.sendmail(sender, receivers, message)         
    conn.quit()
    print "Successfully sent email"

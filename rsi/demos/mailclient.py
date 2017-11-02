@@ -14,7 +14,7 @@ Do you like ketchup?
 """
 
 try:
-   conn = smtplib.SMTP('grr.la',25)
+   conn = smtplib.SMTP('localhost',25)
    conn.sendmail(sender, receivers, message)         
    conn.quit()
    print "Successfully sent email"

@@ -8,7 +8,7 @@ connection = pika.BlockingConnection(pika.ConnectionParameters(
 #               'localhost', 5672, 'psd', credentials))
 channel = connection.channel()
 channel.exchange_declare(exchange='amq.topic',
-                 type='topic', durable=True)
+                 exchange_type='topic', durable=True)
 
 for i in range(1000):
     channel.basic_publish(

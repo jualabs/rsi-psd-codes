@@ -24,7 +24,7 @@ table = {
 """
 packets = ['20.100.32.1','41.0.1.200']
 
-def routing(ip):
+def forwarding(ip):
     """
         Receives the destination ip address and chooses the route
         based on the longest prefix match.
@@ -34,5 +34,5 @@ def routing(ip):
     return 0
 
 for ip in packets:
-    intf = routing(ip);
+    intf = forwarding(ip);
     print("The packet with dest addr",ip,"will be forwarded to interface", intf)

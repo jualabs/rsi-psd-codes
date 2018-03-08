@@ -31,16 +31,7 @@ def routing(ip):
         
         Returns the forwarding interface
     """
-    bestroute = None
-    for route in table.keys():    
-        (net, broad) = sb.getNetAndBroadAddr(route[0],route[1])
-        dest = sb.ip2int(ip)
-        if (net <= dest) and (dest <= broad):
-            if not bestroute:
-                bestroute = route
-            elif int(route[1]) > int(bestroute[1]):
-                bestroute = route
-    return table[bestroute]
+    return 0
 
 for ip in packets:
     intf = routing(ip);

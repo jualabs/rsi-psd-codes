@@ -1,68 +1,84 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Apr  5 14:25:03 2018
+
+@author: Glauco
+"""
 import random
-import sys
-import numpy.random as nprnd
+import os 
+import time
+from struct import unpack
+from functools import reduce
 
-TOT_PKTS = 100000
-PKT_BYTES = 500
-BER = 0.000001
+def complementarySum(word1,word2):
+    result = word1 + word2
+    if result >= 65536:
+        result = (result & 0xFFFF) + 0x1
+    return result
 
-def carry_around_add(a, b):
-    c = a + b
-    return (c & 0xffff) + (c >> 16)
+def checksum(data):
+    stringUnpack = 'H'*int(len(data)/2)
+    stringUnpack = '>' + stringUnpack
+    words = unpack(stringUnpack,data)
+    result = reduce(complementarySum, words)
+    return result.to_bytes(2,byteorder="big")
 
-def checksum(msg):
-    s = 0
-    for i in range(0, len(msg), 2):
-        w = msg[i] + (msg[i+1] << 8)
-        s = carry_around_add(s, w)
-    return ~s & 0xffff
-
-def genNoise(BER):
-    n = 0
-    for i in range(0,8):
-        p = random.random()
-        b = 0
-        if p < BER:
-           b = 1 << i
-        n += b
-    return n
-
-def addNoise(BER,msg):
-    n = 0
-    newmsg = map(lambda v: v ^ genNoise(BER),msg)
-#    for i in range(0,len(msg)):
-#	noise = genNoise(BER)
-#	newmsg.append(int(msg[i] ^ noise))
-    return newmsg 
+def transfer(pkt, BER):
+    bitError = random.choices([0,1],[1-BER,BER],k=len(pkt)*8)
+    stringError = str(bitError)[1:-1].replace(", ","")
+    intError = int(stringError,2)
+    pktWithError = int.from_bytes(pkt,byteorder="big") ^ intError
+    newPkt = pktWithError.to_bytes(len(pkt),byteorder="big")
+    if intError > 0:
+        error = True
+    else:
+        error = False
+    return (newPkt,error)
 
 if __name__ == "__main__":
-    if len(sys.argv) <= 3:
-	print("Usage: checksum.py <total-pkts> <pkt-size> <BER>")
-	sys.exit(2)
-    serverIp = sys.argv[1]
-    serverPort = int(sys.argv[2])
-    user = sys.argv[3]
-    TOT_PKTS = int(sys.argv[1])
-    PKT_BYTES = int(sys.argv[2])
-    BER = float(sys.argv[3])
-    npkts = 0
-    npkts_error = 0.0
-    npkts_chks = 0.0
-    while npkts < TOT_PKTS:
-	#mbytes = [random.randint(0,255) for i in xrange(PKT_BYTES)]
-	mbytes = nprnd.randint(255, size=PKT_BYTES).tolist()
-        npkts += 1
-	pad = len(mbytes)%2
-	mbytes.extend([0]*pad)
-	c1=checksum(mbytes)
-        mbytes_noise = addNoise(BER,mbytes) #passar por um canal com erro
-        c2=checksum(mbytes_noise)
-        if (cmp(mbytes,mbytes_noise) != 0):
-           npkts_error += 1
-	if (c1 != c2):
-           npkts_chks += 1
-    print("Total de pkts: %d"%npkts)
-    print("Pkts com erro: %d"%npkts_error)
-    print("Pkts detectados pelo checksum: %d"%npkts_chks)
-    if npkts_error>0:
-	print("Eficiencia do checksum: %f"%(npkts_chks/npkts_error))
+    """ define parameters """
+    BER = 10**-4
+    nPkts = 1000
+    pktSize = 500
+    """ define metrics """
+    no_changes = 0.0
+    changed = 0.0
+    changed_error_detected = 0.0
+    changed_non_detected = 0.0    
+    
+    """ simulation """
+    for p in range(nPkts):
+        """ generate data """
+        data = os.urandom(pktSize)
+        """ padding data """
+        if len(data) % 2 == 1:
+            data += b'\x00'
+        """ compute checksum """
+        chk = checksum(data)
+        """ create packet """
+        pkt = data + chk
+        """ transfer data """        
+        (pkt_,error) = transfer(pkt, BER)
+        """ split trasmitted packet and checksum """
+        data_ = pkt_[0:-2]
+        chk_= pkt_[len(data):]
+        """ compute checksum from the transmitted packet """
+        chk__ = checksum(data_)
+        """ check if data is ok """
+        if error:
+            changed += 1
+            if chk__ == chk_:
+                """ Packet with error, but undetected """
+                changed_non_detected += 1
+            else:
+                """ Packet with error and undetected """
+                changed_error_detected += 1
+        else:
+            no_changes += 1
+            if chk__ != chk_:
+                print("Houston we have a problem!")
+            
+    print("Packets with error:",100*changed/(no_changes+changed),"%")
+    if changed > 0:
+        print("Packets with error detected by checksum:",100*changed_error_detected/changed,"%")
+        print("Packets with undetected errors:",100*changed_non_detected/changed,"%")

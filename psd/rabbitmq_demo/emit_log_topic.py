@@ -2,9 +2,9 @@
 import pika
 import sys
 
-credentials = pika.PlainCredentials('guest', 'guest')
+credentials = pika.PlainCredentials('avaliacaoparcial2', 'voutirar10')
 connection = pika.BlockingConnection(pika.ConnectionParameters(
-               'localhost', 5672, '/', credentials))
+               '172.16.207.136', 5672, 'meteorologia', credentials))
 channel = connection.channel()
 
 channel.exchange_declare(exchange='topic_logs',

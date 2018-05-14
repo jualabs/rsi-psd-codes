@@ -22,7 +22,7 @@ queue_name = result.method.queue
 
 channel.queue_bind(exchange='topic_logs',
                        queue=queue_name,
-                       routing_key='#')
+                       routing_key='*.alerta.*')
 
 print ' [*] Waiting for logs. To exit press CTRL+C'
 

@@ -16,7 +16,7 @@ connection = pika.BlockingConnection(pika.ConnectionParameters(host, 5672, user_
 channel = connection.channel()
 
 channel.exchange_declare(exchange='topic_logs',
-                         type='topic')
+                         exchange_type='topic')
 
 messages = {'petrolina.radiacao-uv':4,          'petrolina.radiacao-uv':6,
             'petrolina.velocidade-vento':120,   'petrolina.velocidade-vento':80,

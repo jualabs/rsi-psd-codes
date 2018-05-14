@@ -2,19 +2,20 @@
 import pika
 import sys
 
-ip_rabbitmq_server = sys.argv[1]
-
-if not ip_rabbitmq_server:
-    print >> sys.stderr, "Usage: %s [rabbitmq_server_ip] [routing_keys]" % (sys.argv[0],)
+if len(sys.argv) != 4 :
+    print >> sys.stderr, "Usage: %s [CloudAMQP Host] [CloudAMQP: User & Vhost] [CloudAMQP Password]..." % (sys.argv[0],)
     sys.exit(1)
 
-credentials = pika.PlainCredentials('avaliacaoparcial2', 'voutirar10')
-connection = pika.BlockingConnection(pika.ConnectionParameters(
-               ip_rabbitmq_server, 5672, 'meteorologia', credentials))
+host = sys.argv[1]
+user_vhost = sys.argv[2]
+passwd = sys.argv[3]
+
+credentials = pika.PlainCredentials(user_vhost, passwd)
+connection = pika.BlockingConnection(pika.ConnectionParameters(host, 5672, user_vhost, credentials))
 channel = connection.channel()
 
 channel.exchange_declare(exchange='topic_logs',
-                         type='topic')
+                         exchange_type='topic')
 
 result = channel.queue_declare(exclusive=True)
 queue_name = result.method.queue

@@ -1,9 +1,9 @@
 #/usr/bin/env python
 import pika
 
-credentials = pika.PlainCredentials('vwcm', 'vwcm')
+credentials = pika.PlainCredentials('uitsdbkq', 'oVMBBKTj_Axu6BqIArCWs79oNtxIJGvH')
 connection = pika.BlockingConnection(pika.ConnectionParameters(
-               'localhost', 5672, 'psd', credentials))
+               'fox.rmq.cloudamqp.com', 5672, 'uitsdbkq', credentials))
 channel = connection.channel()
 
 

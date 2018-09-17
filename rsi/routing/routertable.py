@@ -6,6 +6,7 @@ Created on Thu Mar  8 14:32:04 2018
 """
 
 import subnetcalc as sb
+import sys
 
 """
     Each entry in this table indicates the network address, 
@@ -24,12 +25,15 @@ table = {
 """
 packets = ['20.100.32.1','41.0.1.200']
 
-def forwarding(ip):
+def forwarding(ip,tbl):
     """
         Receives the destination ip address and chooses the route
-        based on the longest prefix match.
+        based on the longest prefix match againt the routing table.
+        Inputs:
+            ip: ip address (string)
+            tbl: routing table (dict whose the value is the forwarding interface and the key is a tuple with network address and netmask)
         
-        Returns the forwarding interface
+        Returns: the forwarding interface
     """
 
     """
@@ -37,6 +41,21 @@ def forwarding(ip):
     """
     return 0
 
-for ip in packets:
-    intf = forwarding(ip);
-    print("The packet with dest addr",ip,"will be forwarded to interface", intf)
+if __name__ == "__main__":
+    if len(sys.argv) == 3:
+        tblfile = sys.argv[1]
+        ip = sys.argv[2]
+        try:
+            tbl = dict()
+            tblpointer = file(tblfile)
+            for line in tblpointer:
+                fields = line.split(",")
+                tbl[(fields[0],fields[1])] = int(fields[2].strip("\n"))
+        except:
+            print("Problem")
+        intf = forwarding(ip,table);
+        print("The packet with dest addr",ip,"will be forwarded to interface", intf)
+    else:
+        for ip in packets:
+            intf = forwarding(ip,table);
+            print("The packet with dest addr",ip,"will be forwarded to interface", intf)

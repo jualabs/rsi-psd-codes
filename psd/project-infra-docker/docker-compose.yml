@@ -1,0 +1,112 @@
+version: "3.7"
+services:
+  spark-master:
+    image: spark-master:2.3.1
+    container_name: spark-master
+    hostname: spark-master
+    ports:
+      - "8080:8080"
+      - "7077:7077"
+    networks: 
+      spark-network:
+        ipv4_address: 10.5.0.2
+    volumes:
+       - ./volumes/spark-apps:/opt/spark-apps
+       - ./volumes/spark-data:/opt/spark-data
+    environment:
+      - "SPARK_LOCAL_IP=spark-master"
+  spark-worker-1:
+    image: spark-worker:2.3.1
+    container_name: spark-worker-1
+    hostname: spark-worker-1
+    depends_on:
+      - spark-master
+    ports:
+      - "8081:8081"
+    env_file: ./env/spark-worker.sh
+    environment:
+      - "SPARK_LOCAL_IP=spark-worker-1"
+    networks: 
+      spark-network:
+        ipv4_address: 10.5.0.3
+    volumes:
+       - ./volumes/spark-apps:/opt/spark-apps
+       - ./volumes/spark-data:/opt/spark-data
+  spark-worker-2:
+    image: spark-worker:2.3.1
+    container_name: spark-worker-2
+    hostname: spark-worker-2
+    depends_on:
+      - spark-master
+    ports:
+      - "8082:8081"
+    env_file: ./env/spark-worker.sh
+    environment:
+      - "SPARK_LOCAL_IP=spark-worker-2"
+    networks: 
+      spark-network:
+        ipv4_address: 10.5.0.4
+    volumes:
+       - ./volumes/spark-apps:/opt/spark-apps
+       - ./volumes/spark-data:/opt/spark-data
+  spark-worker-3:
+    image: spark-worker:2.3.1
+    container_name: spark-worker-3
+    hostname: spark-worker-3
+    depends_on:
+      - spark-master
+    ports:
+      - "8083:8081"
+    env_file: ./env/spark-worker.sh
+    environment:
+      - "SPARK_LOCAL_IP=spark-worker-3"
+    networks: 
+      spark-network:
+        ipv4_address: 10.5.0.5
+    volumes:
+       - ./volumes/spark-apps:/opt/spark-apps
+       - ./volumes/spark-data:/opt/spark-data
+  tb:
+    image: thingsboard/tb-cassandra
+    container_name: tb
+    hostname: tb
+    ports:
+      - "9090:9090"
+      - "1883:1883"
+      - "5683:5683/udp"
+    #environment:
+      #- ADD_SCHEMA_AND_SYSTEM_DATA=${ADD_SCHEMA_AND_SYSTEM_DATA}
+      #- ADD_DEMO_DATA=${ADD_DEMO_DATA}
+    volumes:
+      - ./volumes/tb/mytb-data:/data
+      - ./volumes/tb/mytb-logs:/var/log/thingsboard
+    networks: 
+      spark-network:
+        ipv4_address: 10.5.0.6
+    # restart: always
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    hostname: rabbitmq
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      - RABBITMQ_ERLANG_COOKIE="SWQOKODSQALRPCLNMEQG"
+      - RABBITMQ_DEFAULT_USER="rabbitmq"
+      - RABBITMQ_DEFAULT_PASS="rabbitmq"
+      - RABBITMQ_DEFAULT_VHOST="/"
+    volumes:
+      - ./volumes/rabbitmq:/var/lib/rabbitmq
+      #- ./volumes/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+      #- ./volumes/rabbitmq/rabbitmq.config:/etc/rabbitmq/rabbitmq.config:ro
+    networks: 
+      spark-network:
+        ipv4_address: 10.5.0.7
+networks:
+  spark-network:
+    driver: bridge
+    ipam:
+     driver: default
+     config:
+       - subnet: 10.5.0.0/16

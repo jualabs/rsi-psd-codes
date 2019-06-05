@@ -36,7 +36,7 @@
     `$ bin/spark-submit examples/src/main/python/sql/streaming/structured_kafka_wordcount.py \
     host1:port1,host2:port2 subscribe topic1,topic2`
     
-    bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.3 /home/rsi-psd-vm/Documents/rsi-psd-codes/psd/pratica-05/structured_kafka_wordcount.py localhost:9092 subscribe meu-topico-legal
+    bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.3 /home/rsi-psd-vm/Documents/rsi-psd-codes/psd/pratica-05/structured_kafka_wordcount_tb.py localhost:9092 subscribe meu-topico-legal
 """
 from __future__ import print_function
 
@@ -45,6 +45,26 @@ import sys
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import explode
 from pyspark.sql.functions import split
+import paho.mqtt.client as mqtt
+import json
+
+
+THINGSBOARD_HOST = '127.0.0.1'
+ACCESS_TOKEN = '5fCX5oI4LncCpngaogOy'
+
+def processRow(row):
+    print(row)
+    # row_data = "{" + row.word + ":" + str(row.count) + "}"
+    row_data = { row.word : row.__getitem__("count")}
+    # Write row to storage
+    client = mqtt.Client()
+    # Set access token
+    client.username_pw_set(ACCESS_TOKEN)
+    # Connect to ThingsBoard using default MQTT port and 60 seconds keepalive interval
+    client.connect(THINGSBOARD_HOST, 1883, 60)
+    # Sending humidity and temperature data to ThingsBoard
+    client.publish('v1/devices/me/telemetry', json.dumps(row_data), 1)
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
@@ -84,10 +104,16 @@ if __name__ == "__main__":
     #words = words.groupBy('word')
 
     # Start running the query that prints the running counts to the console
+    # query = wordCounts\
+    #     .writeStream\
+    #     .outputMode('complete')\
+    #     .format('console')\
+    #     .start()
+
     query = wordCounts\
         .writeStream\
         .outputMode('complete')\
-        .format('console')\
+        .foreach(processRow)\
         .start()
 
     query.awaitTermination()

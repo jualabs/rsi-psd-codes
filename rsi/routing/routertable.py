@@ -9,17 +9,6 @@ import subnetcalc as sb
 import sys
 
 """
-    Each entry in this table indicates the network address, 
-    the network mask, and the forwarding interface.
-"""
-table = {
-            ('41.0.1.0','24'): 3,
-            ('41.0.1.192','26'): 2,
-            ('20.100.0.0','19'): 1,
-            ('0.0.0.0','0'): 4
-        }
-
-"""
     Each entry in the list below is the destination address
     of a given packet.
 """
@@ -31,7 +20,7 @@ def forwarding(ip,tbl):
         based on the longest prefix match againt the routing table.
         Inputs:
             ip: ip address (string)
-            tbl: routing table (dict whose the value is the forwarding interface and the key is a tuple with network address and netmask)
+            tbl: routing table (dict whose the value is the forwarding interface and the key is a tuple with network address and netmask), each entry in this table indicates the network address, the network mask, and the forwarding interface.
         
         Returns: the forwarding interface
     """
@@ -47,15 +36,24 @@ if __name__ == "__main__":
         ip = sys.argv[2]
         try:
             tbl = dict()
-            tblpointer = file(tblfile)
+            tblpointer = open(tblfile)
             for line in tblpointer:
                 fields = line.split(",")
-                tbl[(fields[0],fields[1])] = int(fields[2].strip("\n"))
+                tbl[(fields[0],fields[1])] = fields[2].strip("\n")
         except:
             print("Problem")
-        intf = forwarding(ip,table);
+        intf = forwarding(ip,tbl);
         print("The packet with dest addr",ip,"will be forwarded to interface", intf)
     else:
+        tblfile = "table"
+        try:
+            table = dict()
+            tblpointer = open(tblfile)
+            for line in tblpointer:
+                fields = line.split(",")
+                table[(fields[0],fields[1])] = fields[2].strip("\n")
+        except:
+            print("Problem")
         for ip in packets:
             intf = forwarding(ip,table);
             print("The packet with dest addr",ip,"will be forwarded to interface", intf)

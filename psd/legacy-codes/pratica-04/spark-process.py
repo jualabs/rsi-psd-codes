@@ -21,7 +21,7 @@ fields = [StructField('id', IntegerType(), True), \
 schema = StructType(fields)
     
 # carrega o arquivo csv para o dataframe 'df'
-df = spark.read.load("csv_files/sample-00.csv",
+df = spark.read.load("sample-00.csv",
     format="csv", sep=",", schema=schema, header="false")
 
 # converte a coluna 'ts' do time stamp para o formato yyyy-MM-dd HH:mm

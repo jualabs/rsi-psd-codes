@@ -2,9 +2,9 @@ from kafka import KafkaConsumer
 from json import loads
 
 consumer = KafkaConsumer(
-    'petrolina.radiacao-uv',
+    'petro',
      bootstrap_servers=['localhost:9092'],
-     auto_offset_reset='earliest',
+     auto_offset_reset='latest',
      enable_auto_commit=False,
      group_id='my-group',
      value_deserializer=lambda v: str(v).encode('utf-8'))

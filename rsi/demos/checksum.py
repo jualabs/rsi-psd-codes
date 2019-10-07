@@ -37,9 +37,9 @@ def transfer(pkt, BER):
 
 if __name__ == "__main__":
     """ define parameters """
-    BER = 10**-4
-    nPkts = 1000
-    pktSize = 500
+    BER = 10**-7
+    nPkts = 3000
+    pktSize = 1500
     """ define metrics """
     no_changes = 0.0
     changed = 0.0

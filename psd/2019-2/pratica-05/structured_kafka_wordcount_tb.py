@@ -36,7 +36,7 @@
     `$ bin/spark-submit examples/src/main/python/sql/streaming/structured_kafka_wordcount.py \
     host1:port1,host2:port2 subscribe topic1,topic2`
     
-    bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.3 /home/rsi-psd-vm/Documents/rsi-psd-codes/psd/pratica-05/structured_kafka_wordcount_tb.py localhost:9092 subscribe meu-topico-legal
+    bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.3 /home/rsi-psd-vm/Documents/rsi-psd-codes/psd/2019-2/pratica-05/structured_kafka_wordcount_tb.py localhost:9092 subscribe meu-topico-legal
 """
 from __future__ import print_function
 
@@ -50,7 +50,8 @@ import json
 
 
 THINGSBOARD_HOST = '127.0.0.1'
-ACCESS_TOKEN = '5fCX5oI4LncCpngaogOy'
+# ACCESS_TOKEN = '5fCX5oI4LncCpngaogOy'
+ACCESS_TOKEN = 'CAtKHB10EgI0xLSfAXAj'
 
 def processRow(row):
     print(row)
